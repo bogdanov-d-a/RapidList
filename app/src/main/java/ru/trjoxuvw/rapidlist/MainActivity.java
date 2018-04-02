@@ -39,6 +39,14 @@ public class MainActivity extends AppCompatActivity {
         assert listsView != null;
         assert newListButton != null;
 
+        listsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, ViewActivity.class);
+                intent.putExtra(ViewActivity.LIST_POS, position);
+                startActivityForResult(intent, VIEW_REQUEST);
+            }
+        });
         listsView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {

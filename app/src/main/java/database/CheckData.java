@@ -2,9 +2,9 @@ package database;
 
 public final class CheckData extends AbstractData {
     public long listId;
-    public long itemIndex;
+    public int itemIndex;
 
-    public CheckData(long id, long listId, long itemIndex) {
+    public CheckData(long id, long listId, int itemIndex) {
         super(id);
         this.listId = listId;
         this.itemIndex = itemIndex;

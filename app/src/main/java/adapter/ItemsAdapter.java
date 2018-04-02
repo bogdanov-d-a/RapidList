@@ -9,30 +9,26 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import database.ListData;
 import ru.trjoxuvw.rapidlist.R;
+import ru.trjoxuvw.rapidlist.ViewActivity;
 
-public class ListsAdapter extends BaseAdapter {
+public class ItemsAdapter extends BaseAdapter {
+    private final ArrayList<ViewActivity.ItemData> itemsList;
     private final LayoutInflater mInflater;
-    private ArrayList<ListData> lists = new ArrayList<>();
 
-    public ListsAdapter(Context context) {
+    public ItemsAdapter(Context context, ArrayList<ViewActivity.ItemData> itemsList) {
+        this.itemsList = itemsList;
         mInflater = LayoutInflater.from(context);
-    }
-
-    public void ResetList(ArrayList<ListData> lists) {
-        this.lists = lists;
-        notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return lists.size();
+        return itemsList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return lists.get(position);
+        return itemsList.get(position);
     }
 
     @Override
@@ -52,8 +48,10 @@ public class ListsAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        final ListData list = (ListData) getItem(position);
-        holder.label.setText(list.label);
+        final ViewActivity.ItemData item = (ViewActivity.ItemData) getItem(position);
+        holder.label.setText("[" +
+                (item.checked ? "x" : " ") +
+                "] " + item.label);
 
         return convertView;
     }

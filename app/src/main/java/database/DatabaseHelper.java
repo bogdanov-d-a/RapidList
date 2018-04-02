@@ -73,7 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return new CheckData(
                 cursor.getLong(cursor.getColumnIndexOrThrow(StaticInfo.getCheckRowName(0))),
                 cursor.getLong(cursor.getColumnIndexOrThrow(StaticInfo.getCheckRowName(1))),
-                cursor.getLong(cursor.getColumnIndexOrThrow(StaticInfo.getCheckRowName(2)))
+                cursor.getInt(cursor.getColumnIndexOrThrow(StaticInfo.getCheckRowName(2)))
         );
     }
 
@@ -187,6 +187,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         try {
             db.execSQL(updateGen(data));
+        } finally {
+            db.close();
+        }
+    }
+
+    public void addListCheck(long listId, int itemIndex) {
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            create(new CheckData(0, listId, itemIndex));
+        } finally {
+            db.close();
+        }
+    }
+
+    public void deleteListCheck(long listId, int itemIndex) {
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            db.execSQL("delete from " + StaticInfo.getCheckTableName() +
+                    " where (" + StaticInfo.getCheckRowName(StaticInfo.CheckRowId.LIST_ID) + "=" + escapeStr(Long.toString(listId)) +
+                    ") and (" + StaticInfo.getCheckRowName(StaticInfo.CheckRowId.ITEM_INDEX) + "=" + escapeStr(Integer.toString(itemIndex)) + ");");
         } finally {
             db.close();
         }

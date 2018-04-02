@@ -19,6 +19,8 @@
 
         <activity android:name=".EditActivity"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity android:name=".ViewActivity" />
     </application>
 
 </manifest>
