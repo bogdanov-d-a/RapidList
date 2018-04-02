@@ -1,6 +1,7 @@
 package adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,7 @@ public class ItemsAdapter extends BaseAdapter {
 
         final ViewActivity.ItemData item = (ViewActivity.ItemData) getItem(position);
         holder.label.setText(item.label);
+        holder.label.setTextColor(item.checked ? Color.GRAY : Color.BLACK);
         holder.checkBox.setChecked(item.checked);
 
         return convertView;
