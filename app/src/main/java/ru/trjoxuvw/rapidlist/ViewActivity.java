@@ -88,12 +88,6 @@ public class ViewActivity extends AppCompatActivity {
         assert fButton != null;
         assert itemsView != null;
 
-        fButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
         fButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
