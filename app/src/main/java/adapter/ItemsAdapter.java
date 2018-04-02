@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -41,26 +42,28 @@ public class ItemsAdapter extends BaseAdapter {
         final ViewHolder holder;
 
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.text_item, null);
-            holder = new ViewHolder((TextView) convertView.findViewById(R.id.label));
+            convertView = mInflater.inflate(R.layout.items_item, null);
+            holder = new ViewHolder((TextView) convertView.findViewById(R.id.label),
+                    (CheckBox) convertView.findViewById(R.id.checkBox));
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         final ViewActivity.ItemData item = (ViewActivity.ItemData) getItem(position);
-        holder.label.setText("[" +
-                (item.checked ? "x" : " ") +
-                "] " + item.label);
+        holder.label.setText(item.label);
+        holder.checkBox.setChecked(item.checked);
 
         return convertView;
     }
 
     private static class ViewHolder {
         public final TextView label;
+        public final CheckBox checkBox;
 
-        public ViewHolder(TextView label) {
+        public ViewHolder(TextView label, CheckBox checkBox) {
             this.label = label;
+            this.checkBox = checkBox;
         }
     }
 }
