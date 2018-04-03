@@ -116,6 +116,7 @@ public class EditActivity extends AppCompatActivity {
             }
         });
 
+        saveButton.setText(operation == OPERATION_CREATE ? "Create" : "Update");
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
