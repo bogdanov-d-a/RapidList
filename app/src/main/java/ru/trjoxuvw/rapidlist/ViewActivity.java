@@ -35,7 +35,7 @@ public class ViewActivity extends AppCompatActivity {
     private ListData listData;
     private ArrayList<ItemData> items;
 
-    private void updateStatInfo() {
+    private void updateBtnInfo() {
         final int totalCount = items.size();
         int checkedCount = 0;
         for (ItemData item : items) {
@@ -44,16 +44,20 @@ public class ViewActivity extends AppCompatActivity {
             }
         }
 
-        final String countText = Integer.toString(checkedCount) + " / " + Integer.toString(totalCount);
+        final String prefix = listData.label + " - " + Integer.toString(checkedCount) + " / " + Integer.toString(totalCount);
+        final String suffix;
+
         if (totalCount == 0) {
-            fButton.setText("Empty");
+            suffix = " (Empty)";
         } else if (checkedCount == 0) {
-            fButton.setText("Clear (" + countText + ")");
+            suffix = " (Clear)";
         } else if (checkedCount == totalCount) {
-            fButton.setText("Full (" + countText + ")");
+            suffix = " (Full)";
         } else {
-            fButton.setText(countText);
+            suffix = "";
         }
+
+        fButton.setText(prefix + suffix);
     }
 
     private void setItemCheck(int position, boolean newChecked) {
@@ -61,7 +65,7 @@ public class ViewActivity extends AppCompatActivity {
         if (item.checked != newChecked) {
             item.checked = newChecked;
             ((ItemsAdapter) itemsView.getAdapter()).notifyDataSetChanged();
-            updateStatInfo();
+            updateBtnInfo();
 
             final DatabaseHelper dbInstance = ObjectCache.getDbInstance(getApplicationContext());
             if (newChecked) {
@@ -123,7 +127,7 @@ public class ViewActivity extends AppCompatActivity {
             }
         });
 
-        updateStatInfo();
+        updateBtnInfo();
     }
 
     @Override
