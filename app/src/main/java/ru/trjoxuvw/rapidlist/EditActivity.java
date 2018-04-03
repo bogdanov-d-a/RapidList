@@ -2,6 +2,8 @@ package ru.trjoxuvw.rapidlist;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,9 +22,13 @@ public class EditActivity extends AppCompatActivity {
 
     private EditText editLabel;
     private EditText editItems;
+    private Button saveButton;
+    private Button deleteButton;
+    private Button closeButton;
 
     private int operation;
     private int editListPos;
+    private ListData editList;
 
     private ArrayList<ListData> getLists() {
         return ObjectCache.getLists(getApplicationContext());
@@ -34,6 +40,15 @@ public class EditActivity extends AppCompatActivity {
                 editLabel.getText().toString(),
                 editItems.getText().toString()
         );
+    }
+
+    private void updateBtnState() {
+        final boolean dataChanged = operation == OPERATION_CREATE ||
+                !editLabel.getText().toString().equals(editList.label) ||
+                !editItems.getText().toString().equals(editList.items);
+
+        saveButton.setEnabled(dataChanged);
+        closeButton.setText(dataChanged ? "Discard" : "Close");
     }
 
     @Override
@@ -51,13 +66,14 @@ public class EditActivity extends AppCompatActivity {
                 editListPos = getIntent().getExtras().getInt(EDIT_LIST_POS);
             else
                 editListPos = savedInstanceState.getInt(EDIT_LIST_POS);
+            editList = getLists().get(editListPos);
         }
 
         editLabel = findViewById(R.id.editLabel);
         editItems = findViewById(R.id.editItems);
-        final Button saveButton = findViewById(R.id.saveButton);
-        final Button deleteButton = findViewById(R.id.deleteButton);
-        final Button closeButton = findViewById(R.id.closeButton);
+        saveButton = findViewById(R.id.saveButton);
+        deleteButton = findViewById(R.id.deleteButton);
+        closeButton = findViewById(R.id.closeButton);
 
         assert editLabel != null;
         assert editItems != null;
@@ -66,10 +82,39 @@ public class EditActivity extends AppCompatActivity {
         assert closeButton != null;
 
         if (operation == OPERATION_UPDATE) {
-            final ListData list = getLists().get(editListPos);
-            editLabel.setText(list.label);
-            editItems.setText(list.items);
+            editLabel.setText(editList.label);
+            editItems.setText(editList.items);
         }
+
+        editLabel.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateBtnState();
+            }
+        });
+
+        editItems.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateBtnState();
+            }
+        });
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +162,7 @@ public class EditActivity extends AppCompatActivity {
             }
         });
 
+        updateBtnState();
         setResult(0);
     }
 
