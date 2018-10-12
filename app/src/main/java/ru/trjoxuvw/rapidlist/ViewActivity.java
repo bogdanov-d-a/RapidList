@@ -44,20 +44,7 @@ public class ViewActivity extends AppCompatActivity {
             }
         }
 
-        final String prefix = listData.label + " - " + Integer.toString(checkedCount) + " / " + Integer.toString(totalCount);
-        final String suffix;
-
-        if (totalCount == 0) {
-            suffix = " (Empty)";
-        } else if (checkedCount == 0) {
-            suffix = " (Clear)";
-        } else if (checkedCount == totalCount) {
-            suffix = " (Full)";
-        } else {
-            suffix = "";
-        }
-
-        fButton.setText(prefix + suffix);
+        fButton.setText(listData.label + " - " + Integer.toString(checkedCount) + " / " + Integer.toString(totalCount - checkedCount) + " (" + Integer.toString(totalCount) + ")");
     }
 
     private void setItemCheck(int position, boolean newChecked) {
