@@ -9,7 +9,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
+import database.CheckData;
 import database.ListData;
 import utils.ObjectCache;
 
@@ -29,23 +32,59 @@ public class EditActivity extends AppCompatActivity {
     private int operation;
     private int editListPos;
     private ListData editList;
+    private String editListItemsProcessed;
+    private Set<Integer> editCheckedItems;
 
     private ArrayList<ListData> getLists() {
         return ObjectCache.getLists(getApplicationContext());
     }
 
-    private ListData createListDataFromLayout(long id) {
-        return new ListData(
+    private ArrayList<CheckData> getChecks() {
+        return ObjectCache.getChecks(getApplicationContext());
+    }
+
+    private static class ListDataWithChecks {
+        public ListData listData;
+        public Set<Integer> checks;
+    }
+
+    private ListDataWithChecks createListDataFromLayout(long id) {
+        ListDataWithChecks result = new ListDataWithChecks();
+        result.checks = new TreeSet<>();
+
+        StringBuilder editItemsCleaned = new StringBuilder();
+        int lineIndex = 0;
+        for (String line : editItems.getText().toString().split("\n")) {
+            if (lineIndex > 0) {
+                editItemsCleaned.append('\n');
+            }
+            boolean checked = line.startsWith("#c ");
+            if (checked) {
+                result.checks.add(lineIndex);
+            }
+            editItemsCleaned.append(checked ? line.substring(3) : line);
+            ++lineIndex;
+        }
+
+        result.listData = new ListData(
                 id,
                 editLabel.getText().toString(),
-                editItems.getText().toString()
+                editItemsCleaned.toString()
         );
+
+        return result;
+    }
+
+    private void addChecks(long listId, Set<Integer> itemChecks) {
+        for (Integer itemCheck : itemChecks) {
+            ObjectCache.getDbInstance(getApplicationContext()).addListCheck(listId, itemCheck);
+        }
     }
 
     private void updateBtnState() {
         final boolean dataChanged = operation == OPERATION_CREATE ||
                 !editLabel.getText().toString().equals(editList.label) ||
-                !editItems.getText().toString().equals(editList.items);
+                !editItems.getText().toString().equals(editListItemsProcessed);
 
         saveButton.setEnabled(dataChanged);
         closeButton.setText(dataChanged ? "Discard" : "Close");
@@ -67,6 +106,13 @@ public class EditActivity extends AppCompatActivity {
             else
                 editListPos = savedInstanceState.getInt(EDIT_LIST_POS);
             editList = getLists().get(editListPos);
+
+            editCheckedItems = new TreeSet<>();
+            for (CheckData checkData : getChecks()) {
+                if (checkData.listId == editList.id) {
+                    editCheckedItems.add(checkData.itemIndex);
+                }
+            }
         }
 
         editLabel = findViewById(R.id.editLabel);
@@ -83,7 +129,21 @@ public class EditActivity extends AppCompatActivity {
 
         if (operation == OPERATION_UPDATE) {
             editLabel.setText(editList.label);
-            editItems.setText(editList.items);
+
+            StringBuilder editItemsText = new StringBuilder();
+            int lineIndex = 0;
+            for (String line : editList.items.split("\n")) {
+                if (lineIndex > 0) {
+                    editItemsText.append('\n');
+                }
+                if (editCheckedItems.contains(lineIndex)) {
+                    editItemsText.append("#c ");
+                }
+                editItemsText.append(line);
+                ++lineIndex;
+            }
+            editListItemsProcessed = editItemsText.toString();
+            editItems.setText(editListItemsProcessed);
         }
 
         editLabel.addTextChangedListener(new TextWatcher() {
@@ -122,21 +182,28 @@ public class EditActivity extends AppCompatActivity {
             public void onClick(View v) {
                 switch (operation)
                 {
-                    case OPERATION_CREATE:
-                        ObjectCache.getDbInstance(getApplicationContext()).create(createListDataFromLayout(0));
-                        ObjectCache.invalidateCachedLists();
-                        setResult(1);
-                        finish();
-                        break;
-
-                    case OPERATION_UPDATE:
-                        final long id = getLists().get(editListPos).id;
-                        ObjectCache.getDbInstance(getApplicationContext()).updateList(createListDataFromLayout(id));
+                    case OPERATION_CREATE: {
+                        ListDataWithChecks data = createListDataFromLayout(0);
+                        final long newId = ObjectCache.getDbInstance(getApplicationContext()).create(data.listData);
+                        addChecks(newId, data.checks);
                         ObjectCache.invalidateCachedLists();
                         ObjectCache.invalidateCachedChecks();
                         setResult(1);
                         finish();
                         break;
+                    }
+
+                    case OPERATION_UPDATE: {
+                        final long id = getLists().get(editListPos).id;
+                        ListDataWithChecks data = createListDataFromLayout(id);
+                        ObjectCache.getDbInstance(getApplicationContext()).updateList(data.listData);
+                        addChecks(id, data.checks);
+                        ObjectCache.invalidateCachedLists();
+                        ObjectCache.invalidateCachedChecks();
+                        setResult(1);
+                        finish();
+                        break;
+                    }
                 }
             }
         });
@@ -147,6 +214,7 @@ public class EditActivity extends AppCompatActivity {
                 public boolean onLongClick(View v) {
                     ObjectCache.getDbInstance(getApplicationContext()).deleteList(getLists().get(editListPos).id);
                     ObjectCache.invalidateCachedLists();
+                    ObjectCache.invalidateCachedChecks();
                     setResult(1);
                     finish();
                     return true;
