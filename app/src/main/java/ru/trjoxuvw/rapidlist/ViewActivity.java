@@ -14,6 +14,7 @@ import database.CheckData;
 import database.DatabaseHelper;
 import database.ListData;
 import utils.ObjectCache;
+import utils.Utils;
 
 public class ViewActivity extends AppCompatActivity {
     public static final String LIST_POS = "LIST_POS";
@@ -98,7 +99,7 @@ public class ViewActivity extends AppCompatActivity {
 
         items = new ArrayList<>();
         for (String itemLabel : listData.items.split("\n")) {
-            items.add(new ItemData(itemLabel, false));
+            items.add(new ItemData(Utils.ParseLine(itemLabel), false));
         }
         for (CheckData checkData : ObjectCache.getChecks(getApplicationContext())) {
             if (checkData.listId == listData.id) {
