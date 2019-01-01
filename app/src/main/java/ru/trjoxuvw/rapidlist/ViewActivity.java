@@ -29,6 +29,12 @@ public class ViewActivity extends AppCompatActivity {
         }
     }
 
+    private enum Status {
+        ALL_CHECKED,
+        ALL_UNCHECKED,
+        MIXED
+    }
+
     private Button fButton;
     private ListView itemsView;
 
@@ -36,13 +42,22 @@ public class ViewActivity extends AppCompatActivity {
     private ListData listData;
     private ArrayList<ItemData> items;
 
-    private void updateBtnInfo() {
+    private Status status = Status.MIXED;
+
+    private void updateStatInfo() {
         final int totalCount = items.size();
         int checkedCount = 0;
         for (ItemData item : items) {
             if (item.checked) {
                 ++checkedCount;
             }
+        }
+
+        status = Status.MIXED;
+        if (checkedCount == 0) {
+            status = Status.ALL_UNCHECKED;
+        } else if (totalCount == checkedCount) {
+            status = Status.ALL_CHECKED;
         }
 
         fButton.setText(listData.label + " - " + Integer.toString(checkedCount) + " / " + Integer.toString(totalCount - checkedCount) + " (" + Integer.toString(totalCount) + ")");
@@ -53,7 +68,7 @@ public class ViewActivity extends AppCompatActivity {
         if (item.checked != newChecked) {
             item.checked = newChecked;
             ((ItemsAdapter) itemsView.getAdapter()).notifyDataSetChanged();
-            updateBtnInfo();
+            updateStatInfo();
 
             final DatabaseHelper dbInstance = ObjectCache.getDbInstance(getApplicationContext());
             if (newChecked) {
@@ -80,13 +95,18 @@ public class ViewActivity extends AppCompatActivity {
         assert fButton != null;
         assert itemsView != null;
 
-        fButton.setOnLongClickListener(new View.OnLongClickListener() {
+        fButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
-                for (int itemPosition = 0; itemPosition < items.size(); ++itemPosition) {
-                    setItemCheck(itemPosition, false);
+            public void onClick(View v) {
+                if (status == Status.ALL_CHECKED) {
+                    for (int itemPosition = 0; itemPosition < items.size(); ++itemPosition) {
+                        setItemCheck(itemPosition, false);
+                    }
+                } else if (status == Status.ALL_UNCHECKED) {
+                    for (int itemPosition = 0; itemPosition < items.size(); ++itemPosition) {
+                        setItemCheck(itemPosition, true);
+                    }
                 }
-                return true;
             }
         });
 
@@ -115,7 +135,7 @@ public class ViewActivity extends AppCompatActivity {
             }
         });
 
-        updateBtnInfo();
+        updateStatInfo();
     }
 
     @Override
