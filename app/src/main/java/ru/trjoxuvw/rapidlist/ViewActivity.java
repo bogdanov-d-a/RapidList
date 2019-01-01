@@ -1,5 +1,11 @@
 package ru.trjoxuvw.rapidlist;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -106,6 +112,8 @@ public class ViewActivity extends AppCompatActivity {
                     for (int itemPosition = 0; itemPosition < items.size(); ++itemPosition) {
                         setItemCheck(itemPosition, true);
                     }
+                } else {
+                    MixedStateResetFragment.createAndShow(getSupportFragmentManager());
                 }
             }
         });
@@ -142,5 +150,35 @@ public class ViewActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(LIST_POS, listPos);
+    }
+
+    public static class MixedStateResetFragment extends DialogFragment {
+        public static void createAndShow(FragmentManager manager) {
+            new MixedStateResetFragment().show(manager, "MixedStateResetFragment");
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            super.onCreateDialog(savedInstanceState);
+
+            final ViewActivity parent = (ViewActivity) getActivity();
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(parent);
+            builder.setMessage("Check mark state is mixed. Reset all to unchecked?")
+                    .setPositiveButton("Reset", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            for (int itemPosition = 0; itemPosition < parent.items.size(); ++itemPosition) {
+                                parent.setItemCheck(itemPosition, false);
+                            }
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dismiss();
+                        }
+                    });
+            return builder.create();
+        }
     }
 }
