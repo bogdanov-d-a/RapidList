@@ -68,6 +68,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, EDIT_REQUEST);
             }
         });
+
+        newListButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(MainActivity.this, DebugActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
     }
 
     @Override
