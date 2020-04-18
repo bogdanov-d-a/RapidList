@@ -6,6 +6,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ public class EditActivity extends AppCompatActivity {
 
     private EditText editLabel;
     private EditText editItems;
+    private CheckBox useLongClickCheckBox;
     private Button saveButton;
     private Button deleteButton;
     private Button closeButton;
@@ -69,7 +72,8 @@ public class EditActivity extends AppCompatActivity {
         result.listData = new ListData(
                 id,
                 editLabel.getText().toString(),
-                editItemsCleaned.toString()
+                editItemsCleaned.toString(),
+                useLongClickCheckBox.isChecked()
         );
 
         return result;
@@ -84,7 +88,8 @@ public class EditActivity extends AppCompatActivity {
     private void updateBtnState() {
         final boolean dataChanged = operation == OPERATION_CREATE ||
                 !editLabel.getText().toString().equals(editList.label) ||
-                !editItems.getText().toString().equals(editListItemsProcessed);
+                !editItems.getText().toString().equals(editListItemsProcessed) ||
+                useLongClickCheckBox.isChecked() != editList.useLongClick;
 
         saveButton.setEnabled(dataChanged);
         closeButton.setText(dataChanged ? "Discard" : "Close");
@@ -117,12 +122,14 @@ public class EditActivity extends AppCompatActivity {
 
         editLabel = findViewById(R.id.editLabel);
         editItems = findViewById(R.id.editItems);
+        useLongClickCheckBox = findViewById(R.id.useLongClickCheckBox);
         saveButton = findViewById(R.id.saveButton);
         deleteButton = findViewById(R.id.deleteButton);
         closeButton = findViewById(R.id.closeButton);
 
         assert editLabel != null;
         assert editItems != null;
+        assert useLongClickCheckBox != null;
         assert saveButton != null;
         assert deleteButton != null;
         assert closeButton != null;
@@ -144,6 +151,8 @@ public class EditActivity extends AppCompatActivity {
             }
             editListItemsProcessed = editItemsText.toString();
             editItems.setText(editListItemsProcessed);
+
+            useLongClickCheckBox.setChecked(editList.useLongClick);
         }
 
         editLabel.addTextChangedListener(new TextWatcher() {
@@ -172,6 +181,13 @@ public class EditActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                updateBtnState();
+            }
+        });
+
+        useLongClickCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 updateBtnState();
             }
         });

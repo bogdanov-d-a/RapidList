@@ -41,6 +41,16 @@
         app:layout_constraintLeft_toRightOf="@+id/deleteButton"
         app:layout_constraintRight_toRightOf="parent" />
 
+    <CheckBox
+        android:id="@+id/useLongClickCheckBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Use long click"
+        app:layout_constraintTop_toBottomOf="@+id/editItems"
+        app:layout_constraintBottom_toTopOf="@+id/deleteButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
     <EditText
         android:id="@+id/editItems"
         android:layout_width="0dp"
@@ -50,7 +60,7 @@
         android:inputType="textMultiLine"
         android:hint="Items"
         app:layout_constraintTop_toBottomOf="@+id/editLabel"
-        app:layout_constraintBottom_toTopOf="@+id/deleteButton"
+        app:layout_constraintBottom_toTopOf="@+id/useLongClickCheckBox"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 

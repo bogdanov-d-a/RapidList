@@ -3,11 +3,13 @@ package database;
 public final class ListData extends AbstractData {
     public String label;
     public String items;
+    public boolean useLongClick;
 
-    public ListData(long id, String label, String items) {
+    public ListData(long id, String label, String items, boolean useLongClick) {
         super(id);
         this.label = label;
         this.items = items;
+        this.useLongClick = useLongClick;
     }
 
     @Override
@@ -22,6 +24,8 @@ public final class ListData extends AbstractData {
                 return label;
             case 2:
                 return items;
+            case 3:
+                return Long.toString(useLongClick ? 1 : 0);
             default:
                 return null;
         }

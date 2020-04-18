@@ -30,15 +30,16 @@ public final class StaticInfo {
 
     protected static final String ID_ROW = "id";
 
-    private static final List<String> listRows = Arrays.asList("label", "items");
+    private static final List<String> listRows = Arrays.asList("label", "items", "use_long_click");
     private static final List<String> checkRows = Arrays.asList("list_id", "item_index");
 
-    private static final List<String> listRowTypes = Arrays.asList("text", "text");
+    private static final List<String> listRowTypes = Arrays.asList("text", "text", "integer");
     private static final List<String> checkRowTypes = Arrays.asList("integer references " + getListTableName() + "(" + getListRowName(0) + ")", "integer");
 
     public static final class ListRowId {
         public static final int LABEL = 1;
         public static final int ITEMS = 2;
+        public static final int USE_LONG_CLICK = 3;
     }
 
     public static final class CheckRowId {

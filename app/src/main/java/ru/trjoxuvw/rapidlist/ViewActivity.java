@@ -136,12 +136,24 @@ public class ViewActivity extends AppCompatActivity {
         }
 
         itemsView.setAdapter(new ItemsAdapter(this, items));
-        itemsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                flipItemCheck(position);
-            }
-        });
+
+        if (listData.useLongClick)
+        {
+            itemsView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    flipItemCheck(position);
+                    return true;
+                }
+            });
+        } else {
+            itemsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    flipItemCheck(position);
+                }
+            });
+        }
 
         updateStatInfo();
     }

@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Lists.db";
 
     private static String createGen(StaticInfo.Type type) {
@@ -65,7 +65,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return new ListData(
                 cursor.getLong(cursor.getColumnIndexOrThrow(StaticInfo.getListRowName(0))),
                 cursor.getString(cursor.getColumnIndexOrThrow(StaticInfo.getListRowName(1))),
-                cursor.getString(cursor.getColumnIndexOrThrow(StaticInfo.getListRowName(2)))
+                cursor.getString(cursor.getColumnIndexOrThrow(StaticInfo.getListRowName(2))),
+                cursor.getLong(cursor.getColumnIndexOrThrow(StaticInfo.getListRowName(3))) != 0
         );
     }
 
@@ -93,6 +94,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         while (curVersion != newVersion) {
             switch (curVersion) {
+                case 1:
+                    db.execSQL("alter table " + StaticInfo.getListTableName() +
+                            " add column " + StaticInfo.getListRowName(StaticInfo.ListRowId.USE_LONG_CLICK) + " integer;");
+                    break;
+
                 default:
                     break;
             }
