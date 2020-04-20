@@ -90,6 +90,17 @@ public class ViewActivity extends AppCompatActivity {
         setItemCheck(position, !items.get(position).checked);
     }
 
+    private void itemClickHandler(int position) {
+        if (listData.showFlipPrompt)
+        {
+            FlipItemCheckPromptFragment.createAndShow(getSupportFragmentManager(), position);
+        }
+        else
+        {
+            flipItemCheck(position);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,7 +153,7 @@ public class ViewActivity extends AppCompatActivity {
             itemsView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    flipItemCheck(position);
+                    itemClickHandler(position);
                     return true;
                 }
             });
@@ -150,7 +161,7 @@ public class ViewActivity extends AppCompatActivity {
             itemsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    flipItemCheck(position);
+                    itemClickHandler(position);
                 }
             });
         }
@@ -186,6 +197,45 @@ public class ViewActivity extends AppCompatActivity {
                         }
                     })
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dismiss();
+                        }
+                    });
+            return builder.create();
+        }
+    }
+
+    public static class FlipItemCheckPromptFragment extends DialogFragment {
+        private static final String ITEM_INDEX_TAG = "ITEM_INDEX_TAG";
+
+        public static void createAndShow(FragmentManager manager, int itemIndex) {
+            final FlipItemCheckPromptFragment fragment = new FlipItemCheckPromptFragment();
+
+            final Bundle bundle = new Bundle();
+            bundle.putInt(ITEM_INDEX_TAG, itemIndex);
+            fragment.setArguments(bundle);
+
+            fragment.show(manager, "FlipItemCheckPromptFragment");
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            super.onCreateDialog(savedInstanceState);
+
+            final Bundle bundle = getArguments();
+            final ViewActivity parent = (ViewActivity) getActivity();
+            final int itemIndex = bundle.getInt(ITEM_INDEX_TAG);
+            final ItemData itemData = parent.items.get(itemIndex);
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(parent);
+            builder.setMessage(itemData.label)
+                    .setPositiveButton(itemData.checked ? "Uncheck" : "Check", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            parent.flipItemCheck(itemIndex);
+                        }
+                    })
+                    .setNegativeButton(itemData.checked ? "Keep checked" : "Keep unchecked", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dismiss();
                         }

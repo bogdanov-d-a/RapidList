@@ -4,12 +4,14 @@ public final class ListData extends AbstractData {
     public String label;
     public String items;
     public boolean useLongClick;
+    public boolean showFlipPrompt;
 
-    public ListData(long id, String label, String items, boolean useLongClick) {
+    public ListData(long id, String label, String items, boolean useLongClick, boolean showFlipPrompt) {
         super(id);
         this.label = label;
         this.items = items;
         this.useLongClick = useLongClick;
+        this.showFlipPrompt = showFlipPrompt;
     }
 
     @Override
@@ -26,6 +28,8 @@ public final class ListData extends AbstractData {
                 return items;
             case 3:
                 return Long.toString(useLongClick ? 1 : 0);
+            case 4:
+                return Long.toString(showFlipPrompt ? 1 : 0);
             default:
                 return null;
         }

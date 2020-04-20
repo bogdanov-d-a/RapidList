@@ -28,6 +28,7 @@ public class EditActivity extends AppCompatActivity {
     private EditText editLabel;
     private EditText editItems;
     private CheckBox useLongClickCheckBox;
+    private CheckBox showFlipPromptCheckBox;
     private Button saveButton;
     private Button deleteButton;
     private Button closeButton;
@@ -73,7 +74,8 @@ public class EditActivity extends AppCompatActivity {
                 id,
                 editLabel.getText().toString(),
                 editItemsCleaned.toString(),
-                useLongClickCheckBox.isChecked()
+                useLongClickCheckBox.isChecked(),
+                showFlipPromptCheckBox.isChecked()
         );
 
         return result;
@@ -89,7 +91,8 @@ public class EditActivity extends AppCompatActivity {
         final boolean dataChanged = operation == OPERATION_CREATE ||
                 !editLabel.getText().toString().equals(editList.label) ||
                 !editItems.getText().toString().equals(editListItemsProcessed) ||
-                useLongClickCheckBox.isChecked() != editList.useLongClick;
+                useLongClickCheckBox.isChecked() != editList.useLongClick ||
+                showFlipPromptCheckBox.isChecked() != editList.showFlipPrompt;
 
         saveButton.setEnabled(dataChanged);
         closeButton.setText(dataChanged ? "Discard" : "Close");
@@ -123,6 +126,7 @@ public class EditActivity extends AppCompatActivity {
         editLabel = findViewById(R.id.editLabel);
         editItems = findViewById(R.id.editItems);
         useLongClickCheckBox = findViewById(R.id.useLongClickCheckBox);
+        showFlipPromptCheckBox = findViewById(R.id.showFlipPromptCheckBox);
         saveButton = findViewById(R.id.saveButton);
         deleteButton = findViewById(R.id.deleteButton);
         closeButton = findViewById(R.id.closeButton);
@@ -130,6 +134,7 @@ public class EditActivity extends AppCompatActivity {
         assert editLabel != null;
         assert editItems != null;
         assert useLongClickCheckBox != null;
+        assert showFlipPromptCheckBox != null;
         assert saveButton != null;
         assert deleteButton != null;
         assert closeButton != null;
@@ -153,6 +158,7 @@ public class EditActivity extends AppCompatActivity {
             editItems.setText(editListItemsProcessed);
 
             useLongClickCheckBox.setChecked(editList.useLongClick);
+            showFlipPromptCheckBox.setChecked(editList.showFlipPrompt);
         }
 
         editLabel.addTextChangedListener(new TextWatcher() {
@@ -186,6 +192,13 @@ public class EditActivity extends AppCompatActivity {
         });
 
         useLongClickCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                updateBtnState();
+            }
+        });
+
+        showFlipPromptCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 updateBtnState();
