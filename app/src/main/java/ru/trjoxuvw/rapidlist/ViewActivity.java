@@ -101,6 +101,20 @@ public class ViewActivity extends AppCompatActivity {
         }
     }
 
+    private void fButtonClickHandler() {
+        if (status == Status.ALL_CHECKED) {
+            for (int itemPosition = 0; itemPosition < items.size(); ++itemPosition) {
+                setItemCheck(itemPosition, false);
+            }
+        } else if (status == Status.ALL_UNCHECKED) {
+            for (int itemPosition = 0; itemPosition < items.size(); ++itemPosition) {
+                setItemCheck(itemPosition, true);
+            }
+        } else {
+            MixedStateResetFragment.createAndShow(getSupportFragmentManager());
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,23 +125,6 @@ public class ViewActivity extends AppCompatActivity {
 
         assert fButton != null;
         assert itemsView != null;
-
-        fButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (status == Status.ALL_CHECKED) {
-                    for (int itemPosition = 0; itemPosition < items.size(); ++itemPosition) {
-                        setItemCheck(itemPosition, false);
-                    }
-                } else if (status == Status.ALL_UNCHECKED) {
-                    for (int itemPosition = 0; itemPosition < items.size(); ++itemPosition) {
-                        setItemCheck(itemPosition, true);
-                    }
-                } else {
-                    MixedStateResetFragment.createAndShow(getSupportFragmentManager());
-                }
-            }
-        });
 
         if (savedInstanceState == null) {
             listPos = getIntent().getExtras().getInt(LIST_POS);
@@ -148,8 +145,14 @@ public class ViewActivity extends AppCompatActivity {
 
         itemsView.setAdapter(new ItemsAdapter(this, items));
 
-        if (listData.useLongClick)
-        {
+        if (listData.useLongClick) {
+            fButton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    fButtonClickHandler();
+                    return true;
+                }
+            });
             itemsView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -158,6 +161,12 @@ public class ViewActivity extends AppCompatActivity {
                 }
             });
         } else {
+            fButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    fButtonClickHandler();
+                }
+            });
             itemsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
