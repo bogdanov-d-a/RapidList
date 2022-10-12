@@ -13,7 +13,7 @@ import utils.Utils;
 
 public class DebugActivity extends AppCompatActivity {
     private static final String dbPath = "/data/data/ru.trjoxuvw.rapidlist/databases/" + DatabaseHelper.DATABASE_NAME;
-    private static final String defaultBackupName = "rl-bk.db";
+    private static final String defaultBackupName = "rl-bk-db.png";
 
     private EditText backupPathText;
 
@@ -28,7 +28,7 @@ public class DebugActivity extends AppCompatActivity {
 
         backupPathText = findViewById(R.id.backupPathText);
         assert backupPathText != null;
-        backupPathText.setText(Environment.getExternalStorageDirectory() + "/" + defaultBackupName);
+        backupPathText.setText(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/" + defaultBackupName);
 
         final Button backupButton = findViewById(R.id.backupButton);
         assert backupButton != null;
