@@ -29,12 +29,15 @@
                 android:value="" />
         </activity>
 
-        <activity android:name=".EditActivity"
+        <activity
+            android:name=".EditActivity"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".ViewActivity" />
+        <activity
+            android:name=".ViewActivity" />
 
-        <activity android:name=".DebugActivity"
+        <activity
+            android:name=".DebugActivity"
             android:launchMode="singleInstance"
             android:taskAffinity="">
         </activity>
